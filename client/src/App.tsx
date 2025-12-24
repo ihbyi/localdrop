@@ -1,35 +1,21 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Pen, Upload } from 'lucide-react';
+import { Button } from './components/ui/button';
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    return (
+        <div>
+            <div className="min-h-screen flex items-center justify-center flex-col gap-4 w-[350px] mx-auto">
+                <div>You are known as: ihbyi</div>
+                <div className="border border-dashed border-2 rounded-lg py-10 flex flex-col items-center justify-center gap-4 hover:border-primary transition-colors cursor-pointer duration-300 w-full">
+                    <Upload className="w-10 h-10" strokeWidth={1} />
+                    <p className="text-lg text-foreground">
+                        Click to upload / Drop files here
+                    </p>
+                </div>
+                <Button className="w-full">Recieve Files</Button>
+            </div>
+        </div>
+    );
 }
 
-export default App
+export default App;
