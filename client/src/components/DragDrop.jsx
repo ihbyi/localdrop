@@ -1,11 +1,12 @@
 import { Upload } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 function DragDrop({ setFiles }) {
     const [isDragging, setIsDragging] = useState(false);
+    const inputRef = useRef(null);
 
     const openFile = () => {
-        document.getElementById('file').click();
+        inputRef.current?.click();
     };
 
     const handleFileChange = (e) => {
@@ -59,7 +60,7 @@ function DragDrop({ setFiles }) {
             <input
                 type="file"
                 name="file"
-                id="file"
+                ref={inputRef}
                 className="hidden"
                 multiple
                 onChange={handleFileChange}
