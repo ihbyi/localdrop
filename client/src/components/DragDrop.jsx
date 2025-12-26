@@ -1,6 +1,9 @@
 import { Upload } from 'lucide-react';
+import { useState } from 'react';
 
 function DragDrop({ setFiles }) {
+    const [isDragging, setIsDragging] = useState(false);
+
     const openFile = () => {
         document.getElementById('file').click();
     };
@@ -10,10 +13,47 @@ function DragDrop({ setFiles }) {
         setFiles((prev) => [...prev, ...selectedFiles]);
     };
 
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const onDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+
+        const dropped = Array.from(e.dataTransfer.files || []);
+        if (dropped.length === 0) return;
+
+        setFiles((prev) => [...prev, ...dropped]);
+    };
+
     return (
         <div
-            className="w-full py-10 border border-dashed border-gray-400 text-center rounded-lg text-gray-400 flex flex-col items-center gap-2 cursor-pointer hover:text-gray-600 hover:border-gray-600 transition-colors duration-200"
+            className={`w-full py-10 border border-dashed text-center rounded-lg ${
+                isDragging ? 'text-gray-600' : 'text-gray-400'
+            } ${
+                isDragging ? 'border-gray-600' : 'border-gray-400'
+            } flex flex-col items-center gap-2 cursor-pointer transition-colors duration-200`}
             onClick={openFile}
+            onDragEnter={handleDragEnter}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={onDrop}
         >
             <Upload className="size-8" strokeWidth={1} />
             <input
