@@ -1,12 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Header from '../components/Header';
 import SendPage from '../pages/SendPage';
 
-export default function Send({ user, setUser }) {
+export default function Send({ user, setUser, onMount }) {
     const navigate = useNavigate();
     const [files, setFiles] = useState([]);
+
+    useEffect(() => {
+        if (onMount) onMount();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleNameChange = (newName) => {
         setUser({ ...user, name: newName });

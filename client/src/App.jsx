@@ -40,7 +40,7 @@ function App() {
         if (socketRef.current && user.id && typeof user.id === 'string') {
             socketRef.current.emit('update user', user);
         }
-    }, [user.type]);
+    }, [user]);
 
     useEffect(() => {
         const handleBeforeUnload = () => {

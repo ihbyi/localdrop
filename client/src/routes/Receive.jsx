@@ -1,10 +1,16 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Header from '../components/Header';
 import RecievePage from '../pages/RecievePage';
 
-export default function Receive({ user, setUser }) {
+export default function Receive({ user, setUser, onMount }) {
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (onMount) onMount();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleNameChange = (newName) => {
         setUser({ ...user, name: newName });
