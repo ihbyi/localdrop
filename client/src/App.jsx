@@ -4,58 +4,99 @@ import SendPage from './pages/SendPage';
 import RecievePage from './pages/RecievePage';
 import Header from './components/Header';
 import ReciepentPage from './pages/ReciepentPage';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 
 let socket;
+const SERVER_ENDPOINT = 'http://localhost:5000';
 
 function App() {
-    const SERVER_ENDPOINT = 'http://localhost:5000';
-
     const [isSendPage, setIsSendPage] = useState(true);
     const [files, setFiles] = useState([]);
-    const [name, setName] = useState('user');
+    const [user, setUser] = useState({
+        id: null,
+        name: 'user',
+        type: 'sender',
+    });
     const [isReciepentPage, setIsReciepentPage] = useState(false);
-
     const [recievers, setRecievers] = useState([]);
+    const [selectedReciepents, setSelectedReciepents] = useState([]);
+
+    const socketRef = useRef(null);
 
     const buttonDisabled = files.length <= 0;
 
-    const reciepents = [{ id: 1, name: 'Husam' }];
+    useEffect(() => {
+        if (!socketRef.current) socketRef.current = new io(SERVER_ENDPOINT);
+        socket = socketRef.current;
+        const type = isSendPage ? 'sender' : 'reciever';
+        socket.emit('join', { type });
+
+        return () => {};
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
-        console.log('hi');
-        socket = new io(SERVER_ENDPOINT);
-        socket.emit('join');
+        socket.on('user', ({ user }) => {
+            setUser(user);
+        });
 
         return () => {
-            socket.disconnect();
-            socket.off();
+            socket.off('user');
         };
-    }, [SERVER_ENDPOINT]);
+    }, []);
 
     useEffect(() => {
-        socket.on('name', ({ newName }) => {
-            setName(newName);
+        if (socket && user.id && user.id !== null) {
+            const updatedUser = {
+                ...user,
+                type: isSendPage ? 'sender' : 'reciever',
+            };
+            socket.emit('update user', updatedUser);
+            setUser(updatedUser);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isSendPage]);
+
+    useEffect(() => {
+        socket.on('receivers list', (receivers) => {
+            console.log('Receivers updated:', receivers);
+            setRecievers(receivers);
         });
-    });
+
+        return () => {
+            socket.off('receivers list');
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleBeforeUnload = () => {
+            socket?.disconnect();
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
 
     return (
         <div className="max-w-100 mx-auto">
             <div className="min-h-screen flex flex-col items-center gap-4 pt-[30vh] pb-35">
                 <Header
                     page={isSendPage ? 'Send' : 'Recieve'}
-                    name={name}
-                    setName={setName}
-                ></Header>
+                    name={user.name}
+                    setName={(newName) => setUser({ ...user, name: newName })}
+                />
                 <Activity mode={isSendPage ? 'visible' : 'hidden'}>
                     <Activity mode={!isReciepentPage ? 'visible' : 'hidden'}>
                         <SendPage files={files} setFiles={setFiles} />
                     </Activity>
                     <Activity mode={isReciepentPage ? 'visible' : 'hidden'}>
                         <ReciepentPage
-                            reciepents={reciepents}
-                            setRecievers={setRecievers}
+                            reciepents={recievers}
+                            setRecievers={setSelectedReciepents}
                         />
                     </Activity>
                 </Activity>
@@ -105,7 +146,7 @@ function App() {
                                 Back
                             </Button>
                             <Button
-                                disabled={recievers.length <= 0}
+                                disabled={selectedReciepents.length <= 0}
                                 onClick={() => setIsReciepentPage(true)}
                             >
                                 Send

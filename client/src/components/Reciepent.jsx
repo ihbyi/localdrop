@@ -8,7 +8,7 @@ export default function Reciepent({ info, setRecievers }) {
     return (
         <div
             variant="outline"
-            className={`flex gap-2 select-none cursor-pointer border rounded-lg p-4 transition-all duration-200 ${
+            className={`flex flex-col justify-center items-center gap-2 select-none cursor-pointer border rounded-lg p-4 transition-all duration-200 ${
                 active
                     ? 'border-black bg-black/5 shadow-md ring-2 ring-black ring-opacity-50'
                     : 'border-gray-200 bg-white shadow-sm hover:border-gray-300 hover:shadow'

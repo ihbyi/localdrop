@@ -7,7 +7,7 @@ export default function ReciepentPage({ reciepents, setRecievers }) {
     return (
         <>
             <Activity mode={reciepentsExist ? 'visible' : 'hidden'}>
-                <div className={`w-full grid grid-cols-2 gap-4`}>
+                <div className={`w-full grid grid-cols-4 gap-4`}>
                     {reciepents.map((reciepent) => (
                         <Reciepent
                             key={reciepent.id}

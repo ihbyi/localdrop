@@ -1,14 +1,11 @@
-import {
-    uniqueNamesGenerator,
-    adjectives,
-    colors,
-} from 'unique-names-generator';
+import { uniqueNamesGenerator, colors } from 'unique-names-generator';
 
 export function randomName() {
     const config = {
-        dictionaries: [adjectives, colors],
-        separator: '-',
+        dictionaries: [colors],
     };
 
-    return uniqueNamesGenerator(config);
+    let name = uniqueNamesGenerator(config);
+    while (name === 'tan') name = uniqueNamesGenerator;
+    return name;
 }
