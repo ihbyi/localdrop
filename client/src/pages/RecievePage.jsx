@@ -1,7 +1,7 @@
 function RecievePage() {
     return (
         <>
-            <h1>Hi</h1>
+            <h1 className="text-gray-500">Waiting for files...</h1>
         </>
     );
 }

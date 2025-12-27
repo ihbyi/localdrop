@@ -1,4 +1,4 @@
-function Username({ name, setName }) {
+function Username({ name }) {
     return <h1>Welcome {name}</h1>;
 }
 

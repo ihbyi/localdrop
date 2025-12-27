@@ -2,7 +2,7 @@ import File from './File';
 
 export default function Files({ files = [] }) {
     return (
-        <div className="w-full flex flex-col gap-2">
+        <div className="w-full flex flex-col gap-3">
             {files.map((file, index) => (
                 <File key={index} file={file} />
             ))}
