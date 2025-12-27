@@ -4,8 +4,14 @@ import SendPage from './pages/SendPage';
 import RecievePage from './pages/RecievePage';
 import Header from './components/Header';
 import ReciepentPage from './pages/ReciepentPage';
+import { useEffect } from 'react';
+import io from 'socket.io-client';
+
+let socket;
 
 function App() {
+    const SERVER_ENDPOINT = 'http://localhost:5000';
+
     const [isSendPage, setIsSendPage] = useState(true);
     const [files, setFiles] = useState([]);
     const [name, setName] = useState('user');
@@ -16,6 +22,23 @@ function App() {
     const buttonDisabled = files.length <= 0;
 
     const reciepents = [{ id: 1, name: 'Husam' }];
+
+    useEffect(() => {
+        console.log('hi');
+        socket = new io(SERVER_ENDPOINT);
+        socket.emit('join');
+
+        return () => {
+            socket.disconnect();
+            socket.off();
+        };
+    }, [SERVER_ENDPOINT]);
+
+    useEffect(() => {
+        socket.on('name', ({ newName }) => {
+            setName(newName);
+        });
+    });
 
     return (
         <div className="max-w-100 mx-auto">

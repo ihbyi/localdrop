@@ -2,7 +2,7 @@
     "name": "server",
     "version": "1.0.0",
     "description": "",
-    "main": "main.js",
+    "main": "src/main.js",
     "type": "module",
     "scripts": {
         "dev": "nodemon"
@@ -11,6 +11,8 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "express": "^5.2.1"
+        "express": "^5.2.1",
+        "socket.io": "^4.8.3",
+        "unique-names-generator": "^4.7.1"
     }
 }
