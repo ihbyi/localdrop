@@ -4,18 +4,30 @@ import { Button } from '@/components/ui/button';
 import Layout from '../components/Layout';
 import ReciepentPage from '../pages/ReciepentPage';
 
-export default function SelectRecipients({ user, setUser, recievers }) {
+export default function SelectRecipients({
+    user,
+    setUser,
+    recievers,
+    webrtcServiceRef,
+}) {
     const navigate = useNavigate();
     const location = useLocation();
     const files = location.state?.files || [];
 
-    const [selectedReciepents, setSelectedReciepents] = useState([]);
+    const [reciepent, setReciepent] = useState(undefined);
+    const [canSend, setCanSend] = useState(true);
 
     const handleSend = () => {
+        setCanSend(false);
         console.log('Sending files:', files);
-        console.log('To recipients:', selectedReciepents);
+        console.log('To recipient:', reciepent);
+
         // TODO: Navigate to progress page when created
-        // navigate('/sending-progress', { state: { files, selectedReciepents } });
+        // navigate('/sending-progress', { state: { files, reciepent } });
+
+        if (webrtcServiceRef.current && reciepent) {
+            webrtcServiceRef.current.createOffer(reciepent);
+        }
     };
 
     const bottomActions = (
@@ -23,10 +35,7 @@ export default function SelectRecipients({ user, setUser, recievers }) {
             <Button variant="ghost" onClick={() => navigate('/')}>
                 Back
             </Button>
-            <Button
-                disabled={selectedReciepents.length <= 0}
-                onClick={handleSend}
-            >
+            <Button disabled={!reciepent || !canSend} onClick={handleSend}>
                 Send
             </Button>
         </div>
@@ -40,8 +49,9 @@ export default function SelectRecipients({ user, setUser, recievers }) {
             bottomActions={bottomActions}
         >
             <ReciepentPage
-                reciepents={recievers}
-                setRecievers={setSelectedReciepents}
+                recievers={recievers}
+                reciepent={reciepent}
+                setReciepent={setReciepent}
             />
         </Layout>
     );

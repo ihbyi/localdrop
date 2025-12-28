@@ -4,11 +4,13 @@ import io from 'socket.io-client';
 import Send from './routes/Send';
 import Receive from './routes/Receive';
 import SelectRecipients from './routes/SelectRecipients';
+import WebRTCService from './services/webrtcService';
 
 const SERVER_ENDPOINT = 'http://localhost:5000';
 
 function App() {
     const socketRef = useRef(null);
+    const webrtcServiceRef = useRef(null);
     const [user, setUser] = useState({
         id: null,
         name: 'user',
@@ -20,6 +22,7 @@ function App() {
         if (!socketRef.current) {
             socketRef.current = io(SERVER_ENDPOINT);
             socketRef.current.emit('join', { type: 'sender' });
+            webrtcServiceRef.current = new WebRTCService(socketRef.current);
         }
 
         socketRef.current.on('user', ({ user }) => {
@@ -30,9 +33,27 @@ function App() {
             setRecievers(receivers);
         });
 
+        socketRef.current.on('webrtc offer', ({ from, data }) => {
+            console.log('Received offer from', from);
+            webrtcServiceRef.current?.handleOffer(from, data);
+        });
+
+        socketRef.current.on('webrtc answer', ({ from, data }) => {
+            console.log('Received answer from', from);
+            webrtcServiceRef.current?.handleAnswer(data);
+        });
+
+        socketRef.current.on('ice candidate', ({ from, data }) => {
+            console.log('Received ICE candidate from', from);
+            webrtcServiceRef.current?.addIceCandidate(data);
+        });
+
         return () => {
             socketRef.current?.off('user');
             socketRef.current?.off('receivers list');
+            socketRef.current?.off('webrtc offer');
+            socketRef.current?.off('webrtc answer');
+            socketRef.current?.off('ice candidate');
         };
     }, []);
 
@@ -86,6 +107,7 @@ function App() {
                             user={user}
                             setUser={setUser}
                             recievers={recievers}
+                            webrtcService={webrtcServiceRef}
                         />
                     }
                 />
