@@ -107,7 +107,7 @@ function App() {
                             user={user}
                             setUser={setUser}
                             recievers={recievers}
-                            webrtcService={webrtcServiceRef}
+                            webrtcServiceRef={webrtcServiceRef}
                         />
                     }
                 />
