@@ -31,13 +31,15 @@ function Progress({ setIsDownloaded }) {
     return <CircleProgress value={value} />;
 }
 
-export default function File({ file = {} }) {
+export default function File({ file = {}, showProgress = false }) {
     const [isDownloaded, setIsDownloaded] = useState(false);
 
     return (
         <div className="flex items-center w-full gap-2">
-            {isDownloaded ? (
+            {!showProgress ? (
                 <FileIcon className="text-gray-500" strokeWidth={1} />
+            ) : isDownloaded ? (
+                <FileIcon className="text-green-500" strokeWidth={1} />
             ) : (
                 <Progress setIsDownloaded={setIsDownloaded} />
             )}
