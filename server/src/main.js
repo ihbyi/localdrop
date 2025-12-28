@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import { socketConfig } from './config/socket.config.js';
 import { handleConnection } from './handlers/connectionHandler.js';
 import { handleUserUpdate } from './handlers/userHandler.js';
+import { handleWebRTCSignaling } from './handlers/webrtcHandler.js';
 
 const app = express();
 const server = createServer(app);
@@ -22,6 +23,7 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
     handleConnection(socket, io);
     handleUserUpdate(socket, io);
+    handleWebRTCSignaling(socket, io);
 });
 
 server.listen(PORT, () => {
