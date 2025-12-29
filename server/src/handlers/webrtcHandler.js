@@ -1,3 +1,4 @@
+import { getUser } from '../db/users.js';
 function handleWebRTCSignaling(socket, io) {
     socket.on('webrtc offer', ({ target, data }) => {
         console.log(`WebRTC offer from ${socket.id} to ${target}`);
@@ -16,7 +17,12 @@ function handleWebRTCSignaling(socket, io) {
 
     socket.on('transfer request', ({ target, files }) => {
         console.log(`Transfer request from ${socket.id} to ${target}`);
-        io.to(target).emit('transfer request', { from: socket.id, files });
+        const sender = getUser(socket.id);
+        io.to(target).emit('transfer request', {
+            from: socket.id,
+            senderName: sender?.name || 'Unknown',
+            files,
+        });
     });
     socket.on('transfer response', ({ target, accepted }) => {
         console.log(

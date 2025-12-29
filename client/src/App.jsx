@@ -21,6 +21,7 @@ function App() {
     const [incomingTransfer, setIncomingTransfer] = useState({
         open: false,
         from: null,
+        senderName: null,
         files: [],
     });
 
@@ -54,10 +55,13 @@ function App() {
             webrtcServiceRef.current?.addIceCandidate(data);
         });
 
-        socketRef.current.on('transfer request', ({ from, files }) => {
-            console.log('📥 Transfer request from', from, files);
-            setIncomingTransfer({ open: true, from, files });
-        });
+        socketRef.current.on(
+            'transfer request',
+            ({ from, senderName, files }) => {
+                console.log('📥 Transfer request from', senderName, files);
+                setIncomingTransfer({ open: true, from, senderName, files });
+            }
+        );
         socketRef.current.on('transfer response', ({ from, accepted }) => {
             console.log(
                 '📨 Transfer response from ' + from + ':',
@@ -104,26 +108,32 @@ function App() {
     const handleAcceptTransfer = () => {
         console.log('✅ Accepting transfer from:', incomingTransfer.from);
 
-        // Send acceptance via socket
         socketRef.current.emit('transfer response', {
             target: incomingTransfer.from,
             accepted: true,
         });
 
-        // Close modal
-        setIncomingTransfer({ open: false, from: null, files: [] });
+        setIncomingTransfer({
+            open: false,
+            from: null,
+            senderName: null,
+            files: [],
+        });
     };
     const handleRejectTransfer = () => {
         console.log('❌ Rejecting transfer from:', incomingTransfer.from);
 
-        // Send rejection via socket
         socketRef.current.emit('transfer response', {
             target: incomingTransfer.from,
             accepted: false,
         });
 
-        // Close modal
-        setIncomingTransfer({ open: false, from: null, files: [] });
+        setIncomingTransfer({
+            open: false,
+            from: null,
+            senderName: null,
+            files: [],
+        });
     };
 
     return (

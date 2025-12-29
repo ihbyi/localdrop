@@ -39,7 +39,7 @@ export default function Receive({
                 onOpenChange={(open) => {
                     if (!open) handleRejectTransfer();
                 }}
-                sender={incomingTransfer.from}
+                sender={incomingTransfer.senderName}
                 files={incomingTransfer.files}
                 onAccept={handleAcceptTransfer}
                 onReject={handleRejectTransfer}
