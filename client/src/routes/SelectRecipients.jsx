@@ -22,11 +22,20 @@ export default function SelectRecipients({
         console.log('Sending files:', files);
         console.log('To recipient:', reciepent);
 
-        // TODO: Navigate to progress page when created
-        // navigate('/sending-progress', { state: { files, reciepent } });
-
         if (webrtcServiceRef.current && reciepent) {
-            webrtcServiceRef.current.createOffer(reciepent);
+            // Prepare file metadata for receiver
+            const fileMetadata = files.map((f) => ({
+                name: f.name,
+                size: f.size,
+                type: f.type,
+            }));
+
+            // Request transfer - this will handle the entire flow
+            webrtcServiceRef.current.requestTransfer(
+                reciepent,
+                fileMetadata,
+                files
+            );
         }
     };
 

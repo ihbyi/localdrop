@@ -13,6 +13,19 @@ function handleWebRTCSignaling(socket, io) {
         console.log(`WebRTC ICE Candidate from ${socket.id} to ${target}`);
         io.to(target).emit('ice candidate', { from: socket.id, data });
     });
+
+    socket.on('transfer request', ({ target, files }) => {
+        console.log(`Transfer request from ${socket.id} to ${target}`);
+        io.to(target).emit('transfer request', { from: socket.id, files });
+    });
+    socket.on('transfer response', ({ target, accepted }) => {
+        console.log(
+            `Transfer response from ${socket.id} to ${target}: ${
+                accepted ? 'accepted' : 'rejected'
+            }`
+        );
+        io.to(target).emit('transfer response', { from: socket.id, accepted });
+    });
 }
 
 export { handleWebRTCSignaling };

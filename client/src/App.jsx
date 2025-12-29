@@ -18,6 +18,12 @@ function App() {
     });
     const [recievers, setRecievers] = useState([]);
 
+    const [incomingTransfer, setIncomingTransfer] = useState({
+        open: false,
+        from: null,
+        files: [],
+    });
+
     useEffect(() => {
         if (!socketRef.current) {
             socketRef.current = io(SERVER_ENDPOINT);
@@ -48,12 +54,30 @@ function App() {
             webrtcServiceRef.current?.addIceCandidate(data);
         });
 
+        socketRef.current.on('transfer request', ({ from, files }) => {
+            console.log('📥 Transfer request from', from, files);
+            setIncomingTransfer({ open: true, from, files });
+        });
+        socketRef.current.on('transfer response', ({ from, accepted }) => {
+            console.log(
+                '📨 Transfer response from ' + from + ':',
+                accepted ? 'accepted' : 'rejected'
+            );
+            if (accepted) {
+                webrtcServiceRef.current?.handleTransferAccepted();
+            } else {
+                webrtcServiceRef.current?.handleTransferRejected();
+            }
+        });
+
         return () => {
             socketRef.current?.off('user');
             socketRef.current?.off('receivers list');
             socketRef.current?.off('webrtc offer');
             socketRef.current?.off('webrtc answer');
             socketRef.current?.off('ice candidate');
+            socketRef.current?.off('transfer request');
+            socketRef.current?.off('transfer response');
         };
     }, []);
 
@@ -77,6 +101,31 @@ function App() {
         setUser((prev) => ({ ...prev, type }));
     };
 
+    const handleAcceptTransfer = () => {
+        console.log('✅ Accepting transfer from:', incomingTransfer.from);
+
+        // Send acceptance via socket
+        socketRef.current.emit('transfer response', {
+            target: incomingTransfer.from,
+            accepted: true,
+        });
+
+        // Close modal
+        setIncomingTransfer({ open: false, from: null, files: [] });
+    };
+    const handleRejectTransfer = () => {
+        console.log('❌ Rejecting transfer from:', incomingTransfer.from);
+
+        // Send rejection via socket
+        socketRef.current.emit('transfer response', {
+            target: incomingTransfer.from,
+            accepted: false,
+        });
+
+        // Close modal
+        setIncomingTransfer({ open: false, from: null, files: [] });
+    };
+
     return (
         <BrowserRouter>
             <Routes>
@@ -97,6 +146,9 @@ function App() {
                             user={user}
                             setUser={setUser}
                             onMount={() => updateUserType('reciever')}
+                            incomingTransfer={incomingTransfer}
+                            handleAcceptTransfer={handleAcceptTransfer}
+                            handleRejectTransfer={handleRejectTransfer}
                         />
                     }
                 />
